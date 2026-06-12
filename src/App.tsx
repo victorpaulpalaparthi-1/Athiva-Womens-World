@@ -875,7 +875,7 @@ Could you please confirm the availability of your specialist for this live custo
           {/* Map Frame Panel */}
           <div className="lg:col-span-7 bg-white border border-pink-100 rounded-3xl p-3 shadow-sm h-[380px] lg:h-auto overflow-hidden min-h-[300px] relative">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m12!1s0x3a35fbcbe5147be1%3A0x67fa230e9d6d7e00!2sSri%20Swathi%20Towers%2C%20Pinnamaneni%20Polyclinic%20Rd%2C%20Sidhartha%20Nagar%2C%20Vijayawada%2C%20Andhra%20Pradesh%20520010!5m2!1sen!2sin" 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.2917332514104!2d80.64582617604313!3d16.501533227494553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a35fbcbe5147be1%3A0x67fa230e9d6d7e00!2sSri+Swathi+Towers!5e0!3m2!1sen!2sin!4v1718160000000!5m2!1sen!2sin" 
               className="w-full h-full rounded-2xl border-0"
               allowFullScreen={true}
               loading="lazy"

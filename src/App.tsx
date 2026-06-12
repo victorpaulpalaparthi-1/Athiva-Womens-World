@@ -319,7 +319,7 @@ Could you please confirm the availability of your specialist for this live custo
             {/* Elegant luxury chip */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold tracking-wider bg-brand-gold/20 text-brand-gold border border-brand-gold/30">
               <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "6s" }} />
-              PREMIUM COUTURE SHOWCASE
+              PREMIUM LUXURY SHOWCASE
             </span>
             
             <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight tracking-tight">
@@ -327,7 +327,7 @@ Could you please confirm the availability of your specialist for this live custo
             </h1>
             
             <p className="text-gray-200 text-base sm:text-lg leading-relaxed font-light font-sans">
-              Discover Vijayawada's elite destination for handcrafted Kanchipuram silk sarees, opulent designer lehengas, custom-maggam blouses, and gorgeous antique jewelry. Elevate your traditional bridal signature with <span className="font-medium text-brand-gold">Athiva</span>.
+              Discover Vijayawada's elite flagship destination for fine bangles, cosmetics, skincare, luxury handbags, premium jewellery, personal care, and customized festive gifting. Elevate your traditional premium signature with <span className="font-medium text-brand-gold">Athiva</span>.
             </p>
 
             {/* Direct Hero WhatsApp CTA Button with strict 48+ pixel touch targets */}
@@ -367,7 +367,7 @@ Could you please confirm the availability of your specialist for this live custo
             <div className="space-y-4 text-sm text-gray-200">
               <div className="flex items-start gap-2.5">
                 <CheckCircle className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <p className="font-light">Direct custom bridal fit configurations</p>
+                <p className="font-light">Explore matching premium ensembles & bridal cosmetic sets</p>
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckCircle className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
@@ -404,7 +404,7 @@ Could you please confirm the availability of your specialist for this live custo
           </h2>
           <div className="h-1 w-20 bg-brand-gold mx-auto rounded-full" />
           <p className="text-gray-500 max-w-lg mx-auto text-sm sm:text-base font-light">
-            Each artifact is selected with rigorous standards, combining premium traditional heritage fabrics with elite artisan tailoring of Vijayawada.
+            Each artifact is selected with rigorous standards, combining premium traditional heritage ornaments with elite lifestyle crafts of Vijayawada.
           </p>
         </div>
 
@@ -668,14 +668,14 @@ Could you please confirm the availability of your specialist for this live custo
                 <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
                 <div>
                   <p className="font-semibold text-sm text-gray-800">Specify Interests</p>
-                  <p className="text-xs text-gray-500 font-light">Tell us whether you seek Bridal Kanchipurams, lehengas, blouses, or temple jewelry.</p>
+                  <p className="text-xs text-gray-500 font-light">Tell us whether you seek exquisite jewellery, premium cosmetics, designer handbags, or festive gifts.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
                 <div>
                   <p className="font-semibold text-sm text-gray-800">Launch Live Tour</p>
-                  <p className="text-xs text-gray-500 font-light">Our consultant will show you the fabrics, designs, and detailed embroidery in high-definition.</p>
+                  <p className="text-xs text-gray-500 font-light">Our consultant will show you the design collections, shades, and detailed craftsmanship in high-definition.</p>
                 </div>
               </div>
             </div>
@@ -754,11 +754,11 @@ Could you please confirm the availability of your specialist for this live custo
                   className="w-full bg-slate-50 text-sm border border-pink-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all"
                   style={{ minHeight: "48px" }}
                 >
-                  <option value="Bridal Sarees">Traditional Bridal Kanchipurams</option>
-                  <option value="Bridal & Lehengas">Designer Velvet Lehengas</option>
-                  <option value="Kurtis & Suits">Premium Anarkali Suit Sets</option>
-                  <option value="Antique Jewelry">Lakshmi Temple & Kundan Jewelry</option>
-                  <option value="Designer Blouses">Custom Handcrafted Blouses</option>
+                  <option value="Jewellery">Premium Jewellery & Antiques</option>
+                  <option value="Bangles">Bangles & Festive Sets</option>
+                  <option value="Cosmetics">Cosmetics & Luxury Makeup</option>
+                  <option value="Handbags">Designer Handbags & Purses</option>
+                  <option value="Gifting">Special Gifting & Toys</option>
                 </select>
               </div>
 
@@ -900,7 +900,7 @@ Could you please confirm the availability of your specialist for this live custo
             </h2>
             <div className="h-1 w-12 bg-brand-gold mx-auto rounded-full" />
             <p className="text-gray-500 text-sm font-light">
-              Find instant answers to inquiries regarding personalized fittings, bridal order delivery timeframes, and video walkthrough bookings.
+              Find instant answers to inquiries regarding product authenticities, gift hampers, delivery timeframes, and video walkthrough bookings.
             </p>
           </div>
 
@@ -964,20 +964,20 @@ Could you please confirm the availability of your specialist for this live custo
               </div>
               <div>
                 <p className="font-display font-bold text-white text-lg tracking-tight">Athiva Women's World</p>
-                <p className="text-[10px] text-brand-gold uppercase tracking-widest font-mono font-semibold">Bridal Heritage Collection</p>
+                <p className="text-[10px] text-brand-gold uppercase tracking-widest font-mono font-semibold">Premium Essentials Collection</p>
               </div>
             </div>
             <p className="text-xs text-gray-400 font-light leading-relaxed">
-              Serving the modern woman with fine traditional textiles. From pure zari bridal sarees to elite handcrafted embroidery blouses in Vijayawada.
+              Serving the modern woman with fine cosmetics, exquisite jewellery, premium personal care, designer handbags, and unique gifting treasures in Vijayawada.
             </p>
           </div>
 
           <div className="md:col-span-4 space-y-4">
             <p className="text-white font-bold text-xs uppercase tracking-wider font-mono">Boutique Directory</p>
             <ul className="text-xs space-y-2.5 font-light">
-              <li><a href="#collections" className="hover:text-brand-pink transition-colors">Curated Bridal Sarees</a></li>
-              <li><a href="#collections" className="hover:text-brand-pink transition-colors">Velvet & Silk Designer Lehengas</a></li>
-              <li><a href="#collections" className="hover:text-brand-pink transition-colors">Chic Kurtis & Floor-Length Suits</a></li>
+              <li><a href="#collections" className="hover:text-brand-pink transition-colors">Exquisite Jewellery</a></li>
+              <li><a href="#collections" className="hover:text-brand-pink transition-colors">Luxury Brand Cosmetics</a></li>
+              <li><a href="#collections" className="hover:text-brand-pink transition-colors">Designer Handbags & Pouch Kits</a></li>
               <li><a href="#video-consultation" className="hover:text-brand-pink transition-colors">Video Call Consultations</a></li>
             </ul>
           </div>
@@ -1052,7 +1052,7 @@ Could you please confirm the availability of your specialist for this live custo
               </div>
 
               <p className="text-xs text-gray-500 font-light pt-1 leading-relaxed">
-                "Hello beautiful visitor! 🌸 Let me know what design embroidery, Kanchipuram silk, or customizable blouses you are looking for today."
+                "Hello beautiful visitor! 🌸 Let me know what exquisite jewellery, premium cosmetics, designer handbags, or festive gifts you are looking for today."
               </p>
 
               {/* Chat custom message prompt input */}

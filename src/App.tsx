@@ -14,7 +14,13 @@ import {
   Video, 
   ExternalLink,
   MessageSquare,
-  HelpCircle
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight,
+  Quote,
+  Star,
+  ZoomIn,
+  ZoomOut
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { products, Product } from "./products";
@@ -26,6 +32,11 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("default");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  // Image Gallery Lightbox Overlay States
+  const [lightboxProductIndex, setLightboxProductIndex] = useState<number | null>(null);
+  const [isLightboxZoomed, setIsLightboxZoomed] = useState(false);
 
   // Video Consultation Booking State
   const [bookingName, setBookingName] = useState("");
@@ -78,6 +89,24 @@ export default function App() {
     }
     return result;
   }, [filteredProducts, sortBy]);
+
+  // Keyboard navigation for Lightbox
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (lightboxProductIndex === null) return;
+      if (e.key === "Escape") {
+        setLightboxProductIndex(null);
+      } else if (e.key === "ArrowRight") {
+        setLightboxProductIndex((prev) => (prev === null ? 0 : (prev + 1) % sortedProducts.length));
+        setIsLightboxZoomed(false);
+      } else if (e.key === "ArrowLeft") {
+        setLightboxProductIndex((prev) => (prev === null ? 0 : (prev - 1 + sortedProducts.length) % sortedProducts.length));
+        setIsLightboxZoomed(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxProductIndex, sortedProducts.length]);
 
   // Handle WhatsApp Order Trigger
   const triggerWhatsAppOrder = (product: Product) => {
@@ -558,13 +587,34 @@ Could you please confirm the availability of your specialist for this live custo
                       className="group bg-white rounded-2xl overflow-hidden border border-pink-100 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
                     >
                       {/* Product Media Area */}
-                      <div className="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const idx = sortedProducts.findIndex((p) => p.id === prod.id);
+                          if (idx !== -1) {
+                            setLightboxProductIndex(idx);
+                            setIsLightboxZoomed(false);
+                          }
+                        }}
+                        className="relative aspect-[3/4] overflow-hidden bg-slate-100 cursor-zoom-in w-full block text-left group/media focus:outline-none focus:ring-2 focus:ring-brand-pink focus:ring-inset"
+                        style={{ minHeight: "48px" }}
+                        title={`Click to inspect details and zoom ${prod.name}`}
+                        aria-label={`Click to inspect details and zoom ${prod.name}`}
+                      >
                         <img 
                           src={prod.image} 
                           alt={prod.name} 
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover/media:scale-105"
                           loading="lazy"
                         />
+                        
+                        {/* Interactive overlay indicator for zoom & view */}
+                        <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/media:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                          <span className="bg-white/95 text-slate-900 border border-pink-100 font-mono text-[10px] font-bold tracking-wider uppercase py-2 px-4 rounded-xl shadow-lg flex items-center gap-1.5 transform translate-y-3 group-hover/media:translate-y-0 transition-transform duration-300">
+                            <ZoomIn className="w-4 h-4 text-brand-pink shrink-0" />
+                            Zoom & Inspect
+                          </span>
+                        </div>
                         
                         {/* Premium Badges */}
                         <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
@@ -580,13 +630,13 @@ Could you please confirm the availability of your specialist for this live custo
 
                         {/* Stock status indicator */}
                         {!prod.inStock && (
-                          <div className="absolute inset-0 bg-white/80 backdrop-blur-xs flex items-center justify-center p-4">
+                          <div className="absolute inset-0 bg-white/80 backdrop-blur-xs flex items-center justify-center p-4 pointer-events-none">
                             <span className="bg-rose-600 text-white font-bold text-xs uppercase tracking-widest py-1.5 px-4 rounded-full">
                               Fully Booked
                             </span>
                           </div>
                         )}
-                      </div>
+                      </button>
 
                       {/* Product Metadata Info */}
                       <div className="p-5 flex-1 flex flex-col justify-between gap-4">
@@ -638,6 +688,201 @@ Could you please confirm the availability of your specialist for this live custo
 
         </div>
 
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-slate-50 border-t border-pink-100 relative overflow-hidden">
+        {/* Subtle decorative luxury mesh background elements */}
+        <div className="absolute top-0 left-0 w-80 h-80 bg-brand-pink/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 relative">
+          
+          {/* Section Header */}
+          <div className="text-center space-y-3 mb-16">
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-brand-pink block">
+              VOICES OF ATHIVA
+            </span>
+            <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 leading-tight">
+              Shopper Stories in Vijayawada
+            </h2>
+            <div className="h-1 w-20 bg-brand-gold mx-auto rounded-full" />
+            <p className="text-gray-500 max-w-lg mx-auto text-sm sm:text-base font-light">
+              See what our esteemed clients in Vijayawada have to say about our customized premium collections and retail experience.
+            </p>
+          </div>
+
+          {/* Testimonial Active Slider Area */}
+          <div className="max-w-3xl mx-auto">
+            {(() => {
+              const testimonialsList = [
+                {
+                  name: "Sravani Prasad",
+                  location: "Moghalrajpuram, Vijayawada",
+                  review: "The Royal Antique Gold Kara Bangles are absolutely breath-taking! I wore them for my daughter's engagement and received endless compliments on the intricate detailing. Athiva is truly on another level for festive jewellery.",
+                  rating: 5,
+                  category: "Bangles Shopper"
+                },
+                {
+                  name: "Sireesha Nallapati",
+                  location: "Sidhartha Nagar, Vijayawada",
+                  review: "As someone who loves high-quality makeup, finding true international standard cosmetic collections on Pinnamaneni Polyclinic Road was an incredible surprise. Their store staff matched my skin tone perfectly, and the matte lip kit is stunning!",
+                  rating: 5,
+                  category: "Cosmetics Shopper"
+                },
+                {
+                  name: "Vasundhara K.",
+                  location: "Benz Circle Area, Vijayawada",
+                  review: "I ordered three of their Midnight Golden Jari Potlis as premium family gift hampers for a traditional family event. The craftsmanship of the zari work and pearl tassels was exceptional. Prompt, polite service on WhatsApp too!",
+                  rating: 5,
+                  category: "Gifting & Handbags"
+                },
+                {
+                  name: "Priya Tammineni",
+                  location: "Patamata, Vijayawada",
+                  review: "The Aditi Antique Temple Choker is an absolute masterpiece. Real visual depth, satisfying weight, and exquisite polishing. Their video consultation option was extremely smooth and allowed me to examine everything in detail before making my decision.",
+                  rating: 5,
+                  category: "Jewellery Shopper"
+                },
+                {
+                  name: "Radhika Chowdary",
+                  location: "Gurunanak Colony, Vijayawada",
+                  review: "My absolute go-to for gorgeous local gifting in Vijayawada! Whether it's their beautiful herbal oils, hand-painted diyas, or premium gift boxes, Athiva never disappoints. Their new Sri Swathi Towers location is extremely elegant.",
+                  rating: 5,
+                  category: "Personal Care"
+                }
+              ];
+
+              const current = testimonialsList[activeTestimonial];
+
+              const handlePrev = () => {
+                setActiveTestimonial((prev) => (prev === 0 ? testimonialsList.length - 1 : prev - 1));
+              };
+
+              const handleNext = () => {
+                setActiveTestimonial((prev) => (prev === testimonialsList.length - 1 ? 0 : prev + 1));
+              };
+
+              return (
+                <div className="space-y-8">
+                  {/* Slider Container Card */}
+                  <div className="bg-white rounded-3xl border border-pink-100 p-8 sm:p-12 shadow-sm relative overflow-hidden min-h-[320px] flex flex-col justify-between">
+                    
+                    {/* Golden luxury quote mark icon in card background */}
+                    <Quote className="absolute right-6 top-6 w-16 h-16 text-pink-50 pointer-events-none transform rotate-180 opacity-60" />
+                    
+                    {/* Card Content with elegant layout animations */}
+                    <div className="relative z-10 space-y-6">
+                      
+                      {/* Rating Gold Stars */}
+                      <div className="flex gap-1.5 text-brand-gold">
+                        {Array.from({ length: current.rating }).map((_, idx) => (
+                          <Star key={idx} className="w-4 h-4 fill-brand-gold stroke-none" />
+                        ))}
+                      </div>
+
+                      {/* Review Text */}
+                      <AnimatePresence mode="wait">
+                        <motion.p
+                          key={activeTestimonial}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.25 }}
+                          className="text-gray-700 text-base sm:text-lg lg:text-xl font-light italic leading-relaxed font-sans"
+                        >
+                          "{current.review}"
+                        </motion.p>
+                      </AnimatePresence>
+
+                    </div>
+
+                    {/* Reviewer Details Footer Area */}
+                    <div className="relative z-10 border-t border-pink-50 pt-6 mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={activeTestimonial}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <p className="font-display font-bold text-gray-900 text-base sm:text-lg">
+                            {current.name}
+                          </p>
+                          <p className="text-xs text-gray-400 font-mono tracking-wide mt-1 flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-brand-pink shrink-0" />
+                            {current.location}
+                          </p>
+                        </motion.div>
+                      </AnimatePresence>
+
+                      {/* Highlighted Buyer tag */}
+                      <span className="self-start sm:self-center bg-pink-50 text-brand-pink font-mono text-[10px] font-bold tracking-wider uppercase py-1.5 px-3.5 rounded-full border border-pink-100/50">
+                        ✨ {current.category}
+                      </span>
+                    </div>
+
+                  </div>
+
+                  {/* Responsive controls and slides tracker row */}
+                  <div className="flex items-center justify-between gap-4 pt-2">
+                    
+                    {/* Navigation Buttons conforming strictly to touch size limits */}
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handlePrev}
+                        className="bg-white hover:bg-pink-50 border border-pink-100 text-gray-600 hover:text-brand-pink rounded-xl flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95"
+                        style={{ minWidth: "48px", minHeight: "48px" }}
+                        title="Previous customer testimonial"
+                        aria-label="Previous testimonial"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="bg-white hover:bg-pink-50 border border-pink-100 text-gray-600 hover:text-brand-pink rounded-xl flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95"
+                        style={{ minWidth: "48px", minHeight: "48px" }}
+                        title="Next customer testimonial"
+                        aria-label="Next testimonial"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Nav pagination dots trackers */}
+                    <div className="flex items-center">
+                      {testimonialsList.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setActiveTestimonial(idx)}
+                          className="p-2.5 cursor-pointer focus:outline-none"
+                          style={{ minWidth: "48px", minHeight: "48px" }}
+                          title={`Go to testimonial ${idx + 1}`}
+                          aria-label={`Go to testimonial slide ${idx + 1}`}
+                        >
+                          <span 
+                            className={`block w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                              activeTestimonial === idx 
+                                ? "bg-brand-pink w-6 shadow-xs" 
+                                : "bg-pink-200 hover:bg-brand-pink"
+                            }`} 
+                          />
+                        </button>
+                      ))}
+                    </div>
+
+                  </div>
+
+                </div>
+              );
+            })()}
+          </div>
+
+        </div>
       </section>
 
       {/* 4. Luxury Live Video-Call Consultation Booking Section */}
@@ -1097,6 +1342,249 @@ Could you please confirm the availability of your specialist for this live custo
         </button>
 
       </div>
+
+      {/* 9. BREATHTAKING PREMIUM IMAGE LIGHTBOX OVERLAY */}
+      <AnimatePresence>
+        {lightboxProductIndex !== null && sortedProducts[lightboxProductIndex] && (() => {
+          const prod = sortedProducts[lightboxProductIndex];
+          const hasMultiplePrds = sortedProducts.length > 1;
+          
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 select-none overflow-y-auto"
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Detailed inspection of ${prod.name}`}
+            >
+              <div className="absolute inset-0 cursor-default" onClick={() => setLightboxProductIndex(null)} />
+              
+              {/* Main lightbox card, layout with nice transitions */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 180 }}
+                className="bg-white rounded-3xl border border-pink-100 shadow-2xl w-full max-w-5xl overflow-hidden relative z-10 grid grid-cols-1 md:grid-cols-12 md:max-h-[85vh] h-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                
+                {/* Visual Image Preview Column */}
+                <div className="relative md:col-span-7 bg-slate-50 min-h-[300px] md:h-full overflow-hidden flex items-center justify-center border-b md:border-b-0 md:border-r border-pink-50">
+                  
+                  {/* Absolute subtle ambient background layer of the image */}
+                  <img
+                    src={prod.image}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 scale-110 select-none pointer-events-none"
+                    referrerPolicy="no-referrer"
+                  />
+                  
+                  {/* Main High-Res Image with double zoom or click state support */}
+                  <div className="relative w-full h-full flex items-center justify-center overflow-hidden p-6 select-none">
+                    <motion.div
+                      animate={{ scale: isLightboxZoomed ? 1.8 : 1 }}
+                      transition={{ duration: 0.3 }}
+                      className={`relative max-h-[40vh] md:max-h-[70vh] aspect-[3/4] w-full max-w-[450px] overflow-hidden rounded-2xl shadow-md ${
+                        isLightboxZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
+                      }`}
+                      onClick={() => setIsLightboxZoomed(!isLightboxZoomed)}
+                    >
+                      <img
+                        src={prod.image}
+                        alt={prod.name}
+                        className="w-full h-full object-cover rounded-2xl"
+                        referrerPolicy="no-referrer"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Zoom Instructions Tip or active toggle floating control */}
+                  <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-900/80 backdrop-blur-xs px-3.5 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-mono font-medium tracking-wide flex items-center gap-1.5 border border-white/10 shadow-md">
+                    {isLightboxZoomed ? (
+                      <>
+                        <ZoomOut className="w-3.5 h-3.5 text-brand-gold animate-pulse" />
+                        <span>Tap image to Zoom Out</span>
+                      </>
+                    ) : (
+                      <>
+                        <ZoomIn className="w-3.5 h-3.5 text-brand-gold animate-pulse" />
+                        <span>Tap image to Zoom Magnify</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Slide Carousel Pagination Indicator */}
+                  {hasMultiplePrds && (
+                    <div className="absolute top-5 left-5 bg-slate-900/80 backdrop-blur-xs px-3 py-1 rounded-lg text-white text-[10px] sm:text-xs font-mono tracking-wider font-semibold border border-white/5">
+                      {lightboxProductIndex + 1} / {sortedProducts.length}
+                    </div>
+                  )}
+
+                  {/* Slide Controls (Previous & Next) - strict touch-target 48px square compliance */}
+                  {hasMultiplePrds && (
+                    <div className="absolute inset-y-0 left-0 right-0 flex justify-between items-center px-4 pointer-events-none">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLightboxProductIndex((prev) => (prev === null ? 0 : (prev - 1 + sortedProducts.length) % sortedProducts.length));
+                          setIsLightboxZoomed(false);
+                        }}
+                        className="w-12 h-12 bg-white/90 hover:bg-white text-slate-800 hover:text-brand-pink border border-pink-50 rounded-full flex items-center justify-center transition-all cursor-pointer pointer-events-auto active:scale-90 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-pink"
+                        style={{ minWidth: "48px", minHeight: "48px" }}
+                        title="View previous active display item"
+                        aria-label="Previous exhibit"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLightboxProductIndex((prev) => (prev === null ? 0 : (prev + 1) % sortedProducts.length));
+                          setIsLightboxZoomed(false);
+                        }}
+                        className="w-12 h-12 bg-white/90 hover:bg-white text-slate-800 hover:text-brand-pink border border-pink-50 rounded-full flex items-center justify-center transition-all cursor-pointer pointer-events-auto active:scale-90 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-pink"
+                        style={{ minWidth: "48px", minHeight: "48px" }}
+                        title="View next active display item"
+                        aria-label="Next exhibit"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+
+                </div>
+
+                {/* Right Metadata Details & Action Panel */}
+                <div className="md:col-span-5 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto md:max-h-[85vh] gap-6">
+                  
+                  {/* Header Title Block */}
+                  <div className="space-y-4">
+                    
+                    {/* Header tags & close trigger bar */}
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex flex-wrap gap-2">
+                        {prod.isPremium && (
+                          <span className="bg-brand-pink text-white text-[10px] font-mono tracking-wider font-bold uppercase py-0.5 px-2 rounded-md shadow-xs border border-brand-gold/15">
+                            Premium choice
+                          </span>
+                        )}
+                        <span className="bg-pink-50 text-brand-pink border border-pink-100 text-[10px] font-semibold py-0.5 px-2 rounded-md font-mono uppercase tracking-wider">
+                          {prod.category}
+                        </span>
+                      </div>
+                      
+                      {/* Close button with high discoverability */}
+                      <button
+                        type="button"
+                        onClick={() => setLightboxProductIndex(null)}
+                        className="w-10 h-10 rounded-full bg-slate-50 hover:bg-pink-50 text-slate-500 hover:text-brand-pink border border-pink-100/60 flex items-center justify-center cursor-pointer active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-brand-pink"
+                        style={{ minWidth: "40px", minHeight: "40px" }}
+                        title="Dismiss gallery display overlay"
+                        aria-label="Close detail modal"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Product Name Title */}
+                    <div className="space-y-1">
+                      <h3 className="font-display font-bold text-xl sm:text-2xl text-gray-900 leading-tight">
+                        {prod.name}
+                      </h3>
+                      <p className="text-[10px] font-mono text-gray-400">
+                        Item Reference Code: <span className="font-semibold text-slate-800">{prod.id}</span>
+                      </p>
+                    </div>
+
+                    {/* Horizontal separator */}
+                    <div className="h-px bg-pink-100/50 w-full" />
+
+                    {/* Core Price Tags Block */}
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-400 font-mono font-medium uppercase tracking-wider">Current Market Price</p>
+                      <div className="flex items-baseline gap-2.5">
+                        <span className="text-2xl sm:text-3xl font-display font-black text-brand-pink tracking-tight">
+                          {prod.price}
+                        </span>
+                        {prod.originalPrice && (
+                          <span className="text-sm text-gray-400 line-through">
+                            {prod.originalPrice}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Description Text block */}
+                    <div className="space-y-1.5">
+                      <p className="text-xs text-gray-400 font-mono font-medium uppercase tracking-wider">Product Description</p>
+                      <p className="text-sm text-gray-600 leading-relaxed font-light font-sans">
+                        {prod.description}
+                      </p>
+                    </div>
+
+                    {/* Special features checklist */}
+                    <div className="pt-3 space-y-2">
+                      <div className="flex items-start gap-2 text-xs text-slate-600">
+                        <CheckCircle className="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0" />
+                        <span>100% Authentic Quality Guaranteed</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-xs text-slate-600">
+                        <CheckCircle className="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0" />
+                        <span>Video Consultation & live shade review available</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-xs text-slate-600">
+                        <CheckCircle className="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0" />
+                        <span>Safe Premium Courier Shipping all over India</span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Bottom Checkout & Back CTA area */}
+                  <div className="space-y-3 pt-6 border-t border-pink-100/50">
+                    
+                    {/* Main direct order trigger button with strict compliance sizes */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        triggerWhatsAppOrder(prod);
+                        setLightboxProductIndex(null);
+                      }}
+                      disabled={!prod.inStock}
+                      className={`w-full font-bold rounded-xl text-xs sm:text-sm py-4 flex items-center justify-center gap-2 border shadow-sm transition-all duration-300 select-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95 ${
+                        prod.inStock
+                          ? "bg-brand-pink text-white border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/10"
+                          : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                      }`}
+                      style={{ minHeight: "52px" }}
+                    >
+                      <Phone className="w-4 h-4 fill-current stroke-none" />
+                      Order {prod.name} on WhatsApp
+                    </button>
+
+                    {/* Alternative Back button */}
+                    <button
+                      type="button"
+                      onClick={() => setLightboxProductIndex(null)}
+                      className="w-full text-center py-2.5 text-xs text-slate-400 hover:text-brand-pink font-semibold focus:outline-none hover:underline cursor-pointer"
+                      style={{ minHeight: "44px" }}
+                    >
+                      Back to browse collections
+                    </button>
+                    
+                  </div>
+
+                </div>
+
+              </motion.div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
 
     </div>
   );

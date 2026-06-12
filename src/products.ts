@@ -45,6 +45,17 @@ export const products: Product[] = [
     inStock: true
   },
   {
+    id: "cosmetics-sugar-balm",
+    name: "SUGAR POP Tinted Lip Balm (Premium Cherry)",
+    category: "Cosmetics",
+    price: "₹199",
+    originalPrice: "₹249",
+    description: "Deeply moisturizing, long-lasting tinted lip balm from SUGAR Cosmetics. Enriched with skin-loving Shea Butter and hydration-locking Vitamin E to soothe dry lips with a beautiful crimson flush of red.",
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=600&q=80",
+    isPremium: false,
+    inStock: true
+  },
+  {
     id: "haircare-01",
     name: "Herbal Hair Vitality Elixir Oil",
     category: "Haircare",
@@ -86,6 +97,28 @@ export const products: Product[] = [
     description: "Majestic Lakshmi motif antique gold collar set with premium ruby drops and matching statement jhumkas.",
     image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80",
     isPremium: true,
+    inStock: true
+  },
+  {
+    id: "jewellery-kundan-set",
+    name: "Handcrafted Jadau Kundan Choker Set",
+    category: "Jewellery",
+    price: "₹3,499",
+    originalPrice: "₹4,999",
+    description: "Exquisite kundan work multi-strand choker necklace embellished with glistening glass polki stones, tiny white seed pearls, and rich emerald bead drops.",
+    image: "https://images.unsplash.com/photo-1611085583191-a3b1a20fdb44?auto=format&fit=crop&w=600&q=80",
+    isPremium: true,
+    inStock: true
+  },
+  {
+    id: "jewellery-temple-jhumkas",
+    name: "Golden Mayura Temple Jhumka Earrings",
+    category: "Jewellery",
+    price: "₹1,299",
+    originalPrice: "₹1,999",
+    description: "Traditional double-tier temple jhumkas in luxurious gold polish with detailed peacock motifs and dainty pearl cluster droplets.",
+    image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80",
+    isPremium: false,
     inStock: true
   },
   {

@@ -20,7 +20,10 @@ import {
   Quote,
   Star,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  Sun,
+  Moon,
+  ArrowUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { products, Product } from "./products";
@@ -28,6 +31,38 @@ import { products, Product } from "./products";
 export default function App() {
   // Navigation & UI States
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark";
+    }
+    return false;
+  });
+
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        if (next) {
+          localStorage.setItem("theme", "dark");
+          document.documentElement.classList.add("dark");
+        } else {
+          localStorage.setItem("theme", "light");
+          document.documentElement.classList.remove("dark");
+        }
+      }
+      return next;
+    });
+  };
+
+  // Sync initial theme on load
+  React.useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("default");
@@ -51,6 +86,29 @@ export default function App() {
   const [chatMsg, setChatMsg] = useState("");
 
   const phoneNumber = "918977600600"; // Updated WhatsApp number 8977600600
+
+  // Show / Hide Back to Top button based on scroll depth
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (typeof window !== "undefined") {
+        if (window.scrollY > 400) {
+          setShowBackToTop(true);
+        } else {
+          setShowBackToTop(false);
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   // Categories list derived dynamically from products
   const categories = useMemo(() => {
@@ -156,8 +214,8 @@ Could you please confirm the availability of your specialist for this live custo
   // Boutique FAQs
   const faqs = [
     {
-      question: "Do you offer customized outfits and matching bridal sets?",
-      answer: "Yes, customization is our ultimate core speciality! At Athiva Women's World, we assist with personalized selection of matching sets, festive designs, and gift options tailored precisely to your preferences."
+      question: "Do you offer customized matching accessories and bridal sets?",
+      answer: "Yes, customization is our ultimate core speciality! At Athiva Women's World, we assist with personalized selection of matching jewellery sets, cosmetics, designer bags, and gift options tailored precisely to your preferences."
     },
     {
       question: "How do I place an order for my favorite items?",
@@ -165,7 +223,7 @@ Could you please confirm the availability of your specialist for this live custo
     },
     {
       question: "Do you offer shipping within India?",
-      answer: "Absolutely! We ship our curated essentials and premium fashion products with high reliability all over India via partner express courier services."
+      answer: "Absolutely! We ship our curated essentials and premium lifestyle products with high reliability all over India via partner express courier services."
     },
     {
       question: "What is your physical store address in Vijayawada?",
@@ -174,18 +232,18 @@ Could you please confirm the availability of your specialist for this live custo
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-gray-800 selection:bg-brand-pink/25 selection:text-brand-pink-dark">
+    <div className={`min-h-screen ${isDarkMode ? "dark bg-slate-950 text-slate-100" : "bg-slate-50 text-gray-800"} selection:bg-brand-pink/25 selection:text-brand-pink-dark transition-colors duration-300`}>
       
       {/* 1. Header with Alpine.js structure for full compliance and dual React-control */}
       <header 
-        className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-pink-100"
+        className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm border-b border-pink-100 dark:border-slate-800 transition-colors duration-300"
         x-data="{ isOpen: false }"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
           
           {/* Logo Brand Frame */}
           <a href="#" className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-brand-pink rounded-lg px-2 py-1">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-brand-gold bg-pink-50 flex items-center justify-center shrink-0">
+            <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-brand-gold bg-pink-50 dark:bg-slate-800 flex items-center justify-center shrink-0">
               <img 
                 src="/images/logo.png" 
                 alt="Athiva Women's World Logo" 
@@ -199,25 +257,35 @@ Could you please confirm the availability of your specialist for this live custo
                 Athiva
                 <span className="text-brand-gold text-lg">✦</span>
               </p>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-brand-gold-dark font-semibold mt-0.5">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-brand-gold-dark dark:text-brand-gold font-semibold mt-0.5">
                 Women's World
               </p>
             </div>
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600">
-            <a href="#collections" className="hover:text-brand-pink transition-colors duration-200">Collections</a>
-            <a href="#video-consultation" className="hover:text-brand-pink transition-colors duration-200 flex items-center gap-1.5 py-1">
+          <nav className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600 dark:text-slate-300">
+            <a href="#collections" className="hover:text-brand-pink dark:hover:text-brand-pink transition-colors duration-200">Collections</a>
+            <a href="#video-consultation" className="hover:text-brand-pink dark:hover:text-brand-pink transition-colors duration-200 flex items-center gap-1.5 py-1">
               <Video className="w-4 h-4 text-brand-pink animate-pulse" />
               Live Shopping
             </a>
-            <a href="#store-info" className="hover:text-brand-pink transition-colors duration-200">Store Hours & Map</a>
-            <a href="#faq" className="hover:text-brand-pink transition-colors duration-200">FAQs</a>
+            <a href="#store-info" className="hover:text-brand-pink dark:hover:text-brand-pink transition-colors duration-200">Store Hours & Map</a>
+            <a href="#faq" className="hover:text-brand-pink dark:hover:text-brand-pink transition-colors duration-200">FAQs</a>
           </nav>
 
-          {/* Action Call Button */}
+          {/* Action Call Button & Theme Toggle for Desktop */}
           <div className="hidden md:flex items-center gap-4">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="w-11 h-11 rounded-full bg-slate-100 hover:bg-pink-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center border border-pink-100 dark:border-slate-700 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink"
+              style={{ minWidth: "44px", minHeight: "44px" }}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to 'Midnight' Dark Mode"}
+              aria-label="Toggle navigation theme"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5 text-brand-gold" /> : <Moon className="w-5 h-5 text-brand-pink" />}
+            </button>
             <a 
               href={`https://wa.me/${phoneNumber}`}
               target="_blank"
@@ -230,18 +298,30 @@ Could you please confirm the availability of your specialist for this live custo
             </a>
           </div>
 
-          {/* Mobile Drawer Button - Strict Touch Target Compliant (48px) */}
-          <button 
-            type="button" 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            x-on:click="isOpen = !isOpen"
-            className="md:hidden flex items-center justify-center p-3 text-brand-pink hover:bg-pink-50 rounded-lg transition-colors"
-            style={{ minWidth: "48px", minHeight: "48px" }}
-            aria-label="Toggle Navigation Drawer"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Theme Toggle & Menu Hamburger - Compliant touch targets (48+ pixels) */}
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="w-11 h-11 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center border border-pink-100 dark:border-slate-700 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink"
+              style={{ minWidth: "44px", minHeight: "44px" }}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to 'Midnight' Dark Mode"}
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5 text-brand-gold" /> : <Moon className="w-5 h-5 text-brand-pink" />}
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              x-on:click="isOpen = !isOpen"
+              className="flex items-center justify-center p-3 text-brand-pink hover:bg-pink-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              style={{ minWidth: "48px", minHeight: "48px" }}
+              aria-label="Toggle Navigation Drawer"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Alpine-compliant Lightweight CSS Mobile Drawer Overlays & Menus */}
@@ -256,16 +336,16 @@ Could you please confirm the availability of your specialist for this live custo
             onClick={() => setMobileMenuOpen(false)}
           />
           {/* Drawer Panel */}
-          <aside className="fixed top-[73px] right-0 z-50 w-72 bg-white h-[calc(100vh-73px)] border-l border-pink-100 shadow-2xl p-6 flex flex-col justify-between overflow-y-auto transform transition-transform">
+          <aside className="fixed top-[73px] right-0 z-50 w-72 bg-white dark:bg-slate-900 h-[calc(100vh-73px)] border-l border-pink-100 dark:border-slate-800 shadow-2xl p-6 flex flex-col justify-between overflow-y-auto transform transition-transform transition-colors duration-300">
             <div className="space-y-6">
-              <p className="text-xs font-mono uppercase tracking-widest text-brand-gold-dark font-bold border-b border-pink-100 pb-2">
+              <p className="text-xs font-mono uppercase tracking-widest text-brand-gold-dark dark:text-brand-gold font-bold border-b border-pink-100 dark:border-slate-800 pb-2">
                 Boutique Directory
               </p>
               <nav className="flex flex-col gap-1">
                 <a 
                   href="#collections" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-gray-700 hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 rounded-lg transition-colors"
+                  className="flex items-center justify-between text-gray-700 dark:text-slate-200 hover:text-brand-pink dark:hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                   style={{ minHeight: "48px" }}
                 >
                   <span>Boutique Collections</span>
@@ -274,7 +354,7 @@ Could you please confirm the availability of your specialist for this live custo
                 <a 
                   href="#video-consultation"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-gray-700 hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 rounded-lg transition-colors"
+                  className="flex items-center justify-between text-gray-700 dark:text-slate-200 hover:text-brand-pink dark:hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                   style={{ minHeight: "48px" }}
                 >
                   <span className="flex items-center gap-2">
@@ -286,7 +366,7 @@ Could you please confirm the availability of your specialist for this live custo
                 <a 
                   href="#store-info"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-gray-700 hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 rounded-lg transition-colors"
+                  className="flex items-center justify-between text-gray-700 dark:text-slate-200 hover:text-brand-pink dark:hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                   style={{ minHeight: "48px" }}
                 >
                   <span>Hours & Location</span>
@@ -295,7 +375,7 @@ Could you please confirm the availability of your specialist for this live custo
                 <a 
                   href="#faq"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-gray-700 hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 rounded-lg transition-colors"
+                  className="flex items-center justify-between text-gray-700 dark:text-slate-200 hover:text-brand-pink dark:hover:text-brand-pink text-base font-medium py-3 px-3 hover:bg-pink-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                   style={{ minHeight: "48px" }}
                 >
                   <span>Frequently Asked FAQs</span>
@@ -304,7 +384,7 @@ Could you please confirm the availability of your specialist for this live custo
               </nav>
             </div>
 
-            <div className="space-y-4 border-t border-pink-100 pt-6">
+            <div className="space-y-4 border-t border-pink-100 dark:border-slate-800 pt-6">
               <a 
                 href={`https://wa.me/${phoneNumber}`}
                 target="_blank"
@@ -330,7 +410,7 @@ Could you please confirm the availability of your specialist for this live custo
         <div className="absolute inset-0 opacity-25">
           <img 
             src="/images/hero_banner.jpg" 
-            alt="Athiva Women's World Bridal Heritage" 
+            alt="Athiva Women's World Premium Heritage" 
             className="w-full h-full object-cover"
             loading="lazy"
           />
@@ -362,7 +442,7 @@ Could you please confirm the availability of your specialist for this live custo
             {/* Direct Hero WhatsApp CTA Button with strict 48+ pixel touch targets */}
             <div className="pt-2 flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
               <a 
-                href={`https://wa.me/${phoneNumber}?text=Namaste%20Athiva!%20I%20would%20love%20to%20view%20your%20latest%20festive%20and%20bridal%20collections.`}
+                href={`https://wa.me/${phoneNumber}?text=Namaste%20Athiva!%20I%20would%20love%20to%20view%20your%20latest%20festive%20and%20bridal%20accessories.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto bg-brand-pink hover:bg-brand-pink-dark text-white font-semibold px-8 py-3.5 rounded-full shadow-lg hover:shadow-brand-pink/30 hover:scale-[1.02] flex items-center justify-center gap-3 transition-all duration-300 border border-brand-gold"
@@ -396,15 +476,15 @@ Could you please confirm the availability of your specialist for this live custo
             <div className="space-y-4 text-sm text-gray-200">
               <div className="flex items-start gap-2.5">
                 <CheckCircle className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <p className="font-light">Explore matching premium ensembles & bridal cosmetic sets</p>
+                <p className="font-light">Explore premium accessories & bridal cosmetic sets</p>
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckCircle className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <p className="font-light">High success ratings on global bridal shipments</p>
+                <p className="font-light">High success ratings on global courier shipments</p>
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckCircle className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <p className="font-light">Experienced personal stylists in Vijayawada</p>
+                <p className="font-light">Experienced shopping guides in Vijayawada</p>
               </div>
             </div>
 
@@ -428,11 +508,11 @@ Could you please confirm the availability of your specialist for this live custo
           <p className="font-mono text-xs uppercase tracking-widest text-brand-pink font-bold">
             Curated Treasures
           </p>
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 leading-tight">
+          <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 dark:text-white leading-tight">
             Our Elite Designer Collections
           </h2>
           <div className="h-1 w-20 bg-brand-gold mx-auto rounded-full" />
-          <p className="text-gray-500 max-w-lg mx-auto text-sm sm:text-base font-light">
+          <p className="text-gray-500 dark:text-slate-400 max-w-lg mx-auto text-sm sm:text-base font-light">
             Each artifact is selected with rigorous standards, combining premium traditional heritage ornaments with elite lifestyle crafts of Vijayawada.
           </p>
         </div>
@@ -440,7 +520,7 @@ Could you please confirm the availability of your specialist for this live custo
         {/* Dynamic Category Filter Scroller, Sort & Search Row */}
         <div className="space-y-6">
           
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-pink-100 pb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-pink-100 dark:border-slate-800 pb-6">
             
             {/* Category Selector Side (Full Scrollable list + Mobile Dropdown helper) */}
             <div className="space-y-2 flex-1 min-w-0">
@@ -453,7 +533,7 @@ Could you please confirm the availability of your specialist for this live custo
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-white text-sm border border-pink-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-pink text-gray-700 font-medium"
+                  className="w-full bg-white dark:bg-slate-900 text-sm border border-pink-100 dark:border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-pink text-gray-700 dark:text-slate-200 font-medium"
                   style={{ minHeight: "48px" }}
                 >
                   {categories.map((cat) => (
@@ -475,7 +555,7 @@ Could you please confirm the availability of your specialist for this live custo
                       className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-300 border focus:outline-none focus:ring-2 focus:ring-brand-pink shrink-0 cursor-pointer ${
                         isActive 
                           ? "bg-brand-pink text-white border-brand-pink shadow-md" 
-                          : "bg-white text-gray-600 hover:text-brand-pink hover:bg-pink-50 border-pink-100"
+                          : "bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 hover:text-brand-pink hover:bg-pink-50 dark:hover:bg-slate-800 border-pink-100 dark:border-slate-800"
                       }`}
                       style={{ minHeight: "48px" }}
                     >
@@ -491,13 +571,13 @@ Could you please confirm the availability of your specialist for this live custo
               
               {/* Sort Dropdown Selector */}
               <div className="relative flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 whitespace-nowrap hidden md:inline">
+                <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-400 whitespace-nowrap hidden md:inline">
                   Sort By:
                 </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-white text-sm border border-pink-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink pr-10 cursor-pointer w-full sm:w-52 text-gray-700 font-medium"
+                  className="bg-white dark:bg-slate-900 text-sm border border-pink-100 dark:border-slate-800 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink pr-10 cursor-pointer w-full sm:w-52 text-gray-700 dark:text-slate-200 font-medium"
                   style={{ minHeight: "48px" }}
                 >
                   <option value="default">✨ Recommended</option>
@@ -510,7 +590,7 @@ Could you please confirm the availability of your specialist for this live custo
 
               {/* Keyword Search Overlay */}
               <div className="relative w-full sm:w-64">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-slate-400">
                   <Search className="w-4 h-4" />
                 </span>
                 <input 
@@ -518,7 +598,7 @@ Could you please confirm the availability of your specialist for this live custo
                   placeholder="Search products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white text-sm pl-10 pr-4 py-2.5 rounded-xl border border-pink-100 focus:outline-none focus:ring-2 focus:ring-brand-pink focus:border-brand-pink transition-all text-gray-700"
+                  className="w-full bg-white dark:bg-slate-900 text-sm pl-10 pr-4 py-2.5 rounded-xl border border-pink-100 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-pink focus:border-brand-pink transition-all text-gray-700 dark:text-slate-200"
                   style={{ minHeight: "48px" }}
                 />
                 {searchQuery && (
@@ -536,7 +616,7 @@ Could you please confirm the availability of your specialist for this live custo
           </div>
 
           {/* Active stats bar */}
-          <div className="flex items-center justify-between text-xs text-gray-400 font-mono tracking-tight px-1">
+          <div className="flex items-center justify-between text-xs text-gray-400 dark:text-slate-400 font-mono tracking-tight px-1">
             <span>
               Showing {sortedProducts.length} {sortedProducts.length === 1 ? 'item' : 'items'}
             </span>
@@ -557,10 +637,10 @@ Could you please confirm the availability of your specialist for this live custo
           {/* Grid Layout Container */}
           <div className="relative">
             {sortedProducts.length === 0 ? (
-              <div className="text-center py-16 bg-white border border-pink-100 rounded-2xl p-8 max-w-md mx-auto space-y-3">
-                <ShoppingBag className="w-12 h-12 text-pink-200 mx-auto" />
-                <p className="font-display font-medium text-lg text-gray-800">No products found</p>
-                <p className="text-sm text-gray-500 font-light">We regularly update our collection. Please write to us via WhatsApp to inquire about customized requests.</p>
+              <div className="text-center py-16 bg-white dark:bg-slate-900 border border-pink-100 dark:border-slate-800 rounded-2xl p-8 max-w-md mx-auto space-y-3">
+                <ShoppingBag className="w-12 h-12 text-pink-205 dark:text-slate-700 mx-auto" />
+                <p className="font-display font-medium text-lg text-gray-800 dark:text-slate-100">No products found</p>
+                <p className="text-sm text-gray-500 dark:text-slate-400 font-light">We regularly update our collection. Please write to us via WhatsApp to inquire about customized requests.</p>
                 <button
                   type="button"
                   onClick={() => { setSelectedCategory("All"); setSearchQuery(""); setSortBy("default"); }}
@@ -584,7 +664,7 @@ Could you please confirm the availability of your specialist for this live custo
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.3 }}
-                      className="group bg-white rounded-2xl overflow-hidden border border-pink-100 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                      className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-pink-100 dark:border-slate-800 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
                     >
                       {/* Product Media Area */}
                       <button
@@ -596,7 +676,7 @@ Could you please confirm the availability of your specialist for this live custo
                             setIsLightboxZoomed(false);
                           }
                         }}
-                        className="relative aspect-[3/4] overflow-hidden bg-slate-100 cursor-zoom-in w-full block text-left group/media focus:outline-none focus:ring-2 focus:ring-brand-pink focus:ring-inset"
+                        className="relative aspect-[3/4] overflow-hidden bg-slate-100 dark:bg-slate-950 cursor-zoom-in w-full block text-left group/media focus:outline-none focus:ring-2 focus:ring-brand-pink focus:ring-inset"
                         style={{ minHeight: "48px" }}
                         title={`Click to inspect details and zoom ${prod.name}`}
                         aria-label={`Click to inspect details and zoom ${prod.name}`}
@@ -610,7 +690,7 @@ Could you please confirm the availability of your specialist for this live custo
                         
                         {/* Interactive overlay indicator for zoom & view */}
                         <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/media:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                          <span className="bg-white/95 text-slate-900 border border-pink-100 font-mono text-[10px] font-bold tracking-wider uppercase py-2 px-4 rounded-xl shadow-lg flex items-center gap-1.5 transform translate-y-3 group-hover/media:translate-y-0 transition-transform duration-300">
+                          <span className="bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-slate-100 border border-pink-100 dark:border-slate-800 font-mono text-[10px] font-bold tracking-wider uppercase py-2 px-4 rounded-xl shadow-lg flex items-center gap-1.5 transform translate-y-3 group-hover/media:translate-y-0 transition-transform duration-300">
                             <ZoomIn className="w-4 h-4 text-brand-pink shrink-0" />
                             Zoom & Inspect
                           </span>
@@ -630,7 +710,7 @@ Could you please confirm the availability of your specialist for this live custo
 
                         {/* Stock status indicator */}
                         {!prod.inStock && (
-                          <div className="absolute inset-0 bg-white/80 backdrop-blur-xs flex items-center justify-center p-4 pointer-events-none">
+                          <div className="absolute inset-0 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 pointer-events-none">
                             <span className="bg-rose-600 text-white font-bold text-xs uppercase tracking-widest py-1.5 px-4 rounded-full">
                               Fully Booked
                             </span>
@@ -641,10 +721,10 @@ Could you please confirm the availability of your specialist for this live custo
                       {/* Product Metadata Info */}
                       <div className="p-5 flex-1 flex flex-col justify-between gap-4">
                         <div className="space-y-1.5">
-                          <p className="font-display font-bold text-base text-gray-900 line-clamp-1 group-hover:text-brand-pink transition-colors">
+                          <p className="font-display font-bold text-base text-gray-900 dark:text-slate-100 line-clamp-1 group-hover:text-brand-pink dark:group-hover:text-brand-pink transition-colors">
                             {prod.name}
                           </p>
-                          <p className="text-gray-500 text-xs font-light line-clamp-2 leading-relaxed">
+                          <p className="text-gray-500 dark:text-slate-400 text-xs font-light line-clamp-2 leading-relaxed">
                             {prod.description}
                           </p>
                         </div>
@@ -656,7 +736,7 @@ Could you please confirm the availability of your specialist for this live custo
                               {prod.price}
                             </span>
                             {prod.originalPrice && (
-                              <span className="text-xs text-gray-400 line-through">
+                              <span className="text-xs text-gray-400 dark:text-slate-400 line-through">
                                 {prod.originalPrice}
                               </span>
                             )}
@@ -669,8 +749,8 @@ Could you please confirm the availability of your specialist for this live custo
                             disabled={!prod.inStock}
                             className={`w-full font-semibold rounded-xl text-xs py-3.5 flex items-center justify-center gap-2 border transition-all duration-300 select-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-[0.98] ${
                               prod.inStock 
-                                ? "bg-white border-brand-pink hover:bg-brand-pink text-brand-pink hover:text-white shadow-xs hover:shadow-brand-pink/10" 
-                                : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                                ? "bg-white dark:bg-slate-900 border-brand-pink hover:bg-brand-pink text-brand-pink hover:text-white dark:hover:text-white shadow-xs hover:shadow-brand-pink/10" 
+                                : "bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed"
                             }`}
                             style={{ minHeight: "48px" }}
                           >
@@ -691,7 +771,7 @@ Could you please confirm the availability of your specialist for this live custo
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-slate-50 border-t border-pink-100 relative overflow-hidden">
+      <section id="testimonials" className="py-20 bg-slate-50 dark:bg-slate-950/80 border-t border-pink-100 dark:border-slate-800 relative overflow-hidden transition-colors duration-300">
         {/* Subtle decorative luxury mesh background elements */}
         <div className="absolute top-0 left-0 w-80 h-80 bg-brand-pink/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none" />
@@ -703,11 +783,11 @@ Could you please confirm the availability of your specialist for this live custo
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-brand-pink block">
               VOICES OF ATHIVA
             </span>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 leading-tight">
+            <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 dark:text-white leading-tight">
               Shopper Stories in Vijayawada
             </h2>
             <div className="h-1 w-20 bg-brand-gold mx-auto rounded-full" />
-            <p className="text-gray-500 max-w-lg mx-auto text-sm sm:text-base font-light">
+            <p className="text-gray-500 dark:text-slate-400 max-w-lg mx-auto text-sm sm:text-base font-light">
               See what our esteemed clients in Vijayawada have to say about our customized premium collections and retail experience.
             </p>
           </div>
@@ -766,10 +846,10 @@ Could you please confirm the availability of your specialist for this live custo
               return (
                 <div className="space-y-8">
                   {/* Slider Container Card */}
-                  <div className="bg-white rounded-3xl border border-pink-100 p-8 sm:p-12 shadow-sm relative overflow-hidden min-h-[320px] flex flex-col justify-between">
+                  <div className="bg-white dark:bg-slate-900 rounded-3xl border border-pink-100 dark:border-slate-800 p-8 sm:p-12 shadow-sm relative overflow-hidden min-h-[320px] flex flex-col justify-between transition-colors duration-300">
                     
                     {/* Golden luxury quote mark icon in card background */}
-                    <Quote className="absolute right-6 top-6 w-16 h-16 text-pink-50 pointer-events-none transform rotate-180 opacity-60" />
+                    <Quote className="absolute right-6 top-6 w-16 h-16 text-pink-50 dark:text-pink-900/10 pointer-events-none transform rotate-180 opacity-60" />
                     
                     {/* Card Content with elegant layout animations */}
                     <div className="relative z-10 space-y-6">
@@ -789,7 +869,7 @@ Could you please confirm the availability of your specialist for this live custo
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.25 }}
-                          className="text-gray-700 text-base sm:text-lg lg:text-xl font-light italic leading-relaxed font-sans"
+                          className="text-gray-700 dark:text-slate-200 text-base sm:text-lg lg:text-xl font-light italic leading-relaxed font-sans"
                         >
                           "{current.review}"
                         </motion.p>
@@ -798,7 +878,7 @@ Could you please confirm the availability of your specialist for this live custo
                     </div>
 
                     {/* Reviewer Details Footer Area */}
-                    <div className="relative z-10 border-t border-pink-50 pt-6 mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="relative z-10 border-t border-pink-50 dark:border-slate-800 pt-6 mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={activeTestimonial}
@@ -807,10 +887,10 @@ Could you please confirm the availability of your specialist for this live custo
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <p className="font-display font-bold text-gray-900 text-base sm:text-lg">
+                          <p className="font-display font-bold text-gray-900 dark:text-white text-base sm:text-lg">
                             {current.name}
                           </p>
-                          <p className="text-xs text-gray-400 font-mono tracking-wide mt-1 flex items-center gap-1.5">
+                          <p className="text-xs text-gray-400 dark:text-slate-400 font-mono tracking-wide mt-1 flex items-center gap-1.5">
                             <MapPin className="w-3.5 h-3.5 text-brand-pink shrink-0" />
                             {current.location}
                           </p>
@@ -818,7 +898,7 @@ Could you please confirm the availability of your specialist for this live custo
                       </AnimatePresence>
 
                       {/* Highlighted Buyer tag */}
-                      <span className="self-start sm:self-center bg-pink-50 text-brand-pink font-mono text-[10px] font-bold tracking-wider uppercase py-1.5 px-3.5 rounded-full border border-pink-100/50">
+                      <span className="self-start sm:self-center bg-pink-50 dark:bg-slate-800 text-brand-pink font-mono text-[10px] font-bold tracking-wider uppercase py-1.5 px-3.5 rounded-full border border-pink-100/50 dark:border-slate-700">
                         ✨ {current.category}
                       </span>
                     </div>
@@ -833,7 +913,7 @@ Could you please confirm the availability of your specialist for this live custo
                       <button
                         type="button"
                         onClick={handlePrev}
-                        className="bg-white hover:bg-pink-50 border border-pink-100 text-gray-600 hover:text-brand-pink rounded-xl flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95"
+                        className="bg-white dark:bg-slate-900 hover:bg-pink-50 dark:hover:bg-slate-800 border border-pink-100 dark:border-slate-800 text-gray-600 dark:text-slate-300 hover:text-brand-pink rounded-xl flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95"
                         style={{ minWidth: "48px", minHeight: "48px" }}
                         title="Previous customer testimonial"
                         aria-label="Previous testimonial"
@@ -843,7 +923,7 @@ Could you please confirm the availability of your specialist for this live custo
                       <button
                         type="button"
                         onClick={handleNext}
-                        className="bg-white hover:bg-pink-50 border border-pink-100 text-gray-600 hover:text-brand-pink rounded-xl flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95"
+                        className="bg-white dark:bg-slate-900 hover:bg-pink-50 dark:hover:bg-slate-800 border border-pink-100 dark:border-slate-800 text-gray-600 dark:text-slate-300 hover:text-brand-pink rounded-xl flex items-center justify-center transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95"
                         style={{ minWidth: "48px", minHeight: "48px" }}
                         title="Next customer testimonial"
                         aria-label="Next testimonial"
@@ -868,7 +948,7 @@ Could you please confirm the availability of your specialist for this live custo
                             className={`block w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                               activeTestimonial === idx 
                                 ? "bg-brand-pink w-6 shadow-xs" 
-                                : "bg-pink-200 hover:bg-brand-pink"
+                                : "bg-pink-200 dark:bg-slate-800 hover:bg-brand-pink"
                             }`} 
                           />
                         </button>
@@ -886,77 +966,77 @@ Could you please confirm the availability of your specialist for this live custo
       </section>
 
       {/* 4. Luxury Live Video-Call Consultation Booking Section */}
-      <section id="video-consultation" className="py-20 bg-gradient-to-b from-white to-pink-50 border-t border-pink-100">
+      <section id="video-consultation" className="py-20 bg-gradient-to-b from-white to-pink-50 dark:from-slate-900 dark:to-slate-950/80 border-t border-pink-100 dark:border-slate-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Content Block Column */}
           <div className="lg:col-span-5 space-y-6">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold tracking-wider bg-pink-100 text-brand-pink">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold tracking-wider bg-pink-100 dark:bg-slate-800 text-brand-pink">
               <Video className="w-3.5 h-3.5" />
               LIVE EXCLUSIVE CONSULTATIONS
             </span>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 leading-tight">
+            <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 dark:text-white leading-tight">
               Unable to visit us? Shop Live via Video Call! 📹
             </h2>
-            <p className="text-gray-600 font-light leading-relaxed">
-              Experience the customized shopping journey at Athiva Women's World from the comfort of your home. Schedule a one-on-one live video walkthrough with our luxury bridal specialists. 
+            <p className="text-gray-600 dark:text-slate-300 font-light leading-relaxed">
+              Experience the customized shopping journey at Athiva Women's World from the comfort of your home. Schedule a one-on-one live video walkthrough with our luxury boutique specialists. 
             </p>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
+                <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark dark:text-brand-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">1</span>
                 <div>
-                  <p className="font-semibold text-sm text-gray-800">Choose Your Slot</p>
-                  <p className="text-xs text-gray-500 font-light">Select your preferred appointment date and hour range.</p>
+                  <p className="font-semibold text-sm text-gray-800 dark:text-slate-200">Choose Your Slot</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-light">Select your preferred appointment date and hour range.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
+                <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark dark:text-brand-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">2</span>
                 <div>
-                  <p className="font-semibold text-sm text-gray-800">Specify Interests</p>
-                  <p className="text-xs text-gray-500 font-light">Tell us whether you seek exquisite jewellery, premium cosmetics, designer handbags, or festive gifts.</p>
+                  <p className="font-semibold text-sm text-gray-800 dark:text-slate-200">Specify Interests</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-light">Tell us whether you seek exquisite jewellery, premium cosmetics, designer handbags, or festive gifts.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
+                <span className="w-6 h-6 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-gold-dark dark:text-brand-gold flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">3</span>
                 <div>
-                  <p className="font-semibold text-sm text-gray-800">Launch Live Tour</p>
-                  <p className="text-xs text-gray-500 font-light">Our consultant will show you the design collections, shades, and detailed craftsmanship in high-definition.</p>
+                  <p className="font-semibold text-sm text-gray-800 dark:text-slate-200">Launch Live Tour</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-light">Our consultant will show you the design collections, shades, and detailed craftsmanship in high-definition.</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Form Booking Card Column */}
-          <div className="lg:col-span-7 bg-white border border-pink-100 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-pink-100 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden transition-colors duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-bl-full pointer-events-none" />
             
-            <p className="font-display font-semibold text-xl text-brand-pink-deep border-b border-pink-100 pb-4 mb-6">
+            <p className="font-display font-semibold text-xl text-brand-pink-deep dark:text-brand-pink border-b border-pink-100 dark:border-slate-800 pb-4 mb-6">
               Reserve Video Consultation Slot
             </p>
 
             <form onSubmit={handleBookingSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-500 tracking-wide block">Your Full Name</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-slate-400 tracking-wide block">Your Full Name</label>
                   <input 
                     type="text" 
                     required
                     placeholder="e.g., Sravani Prasad"
                     value={bookingName}
                     onChange={(e) => setBookingName(e.target.value)}
-                    className="w-full bg-slate-50 text-sm border border-pink-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-950 text-sm border border-pink-100 dark:border-slate-800 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all text-gray-800 dark:text-slate-200"
                     style={{ minHeight: "48px" }}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-500 tracking-wide block">WhatsApp Mobile Number</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-slate-400 tracking-wide block">WhatsApp Mobile Number</label>
                   <input 
                     type="tel" 
                     required
                     placeholder="e.g., +91 94400 XXXXX"
                     value={bookingPhone}
                     onChange={(e) => setBookingPhone(e.target.value)}
-                    className="w-full bg-slate-50 text-sm border border-pink-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-950 text-sm border border-pink-100 dark:border-slate-800 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all text-gray-800 dark:text-slate-200"
                     style={{ minHeight: "48px" }}
                   />
                 </div>
@@ -964,22 +1044,22 @@ Could you please confirm the availability of your specialist for this live custo
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-500 tracking-wide block">Preferred Date</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-slate-400 tracking-wide block">Preferred Date</label>
                   <input 
                     type="date"
                     required
                     value={bookingDate}
                     onChange={(e) => setBookingDate(e.target.value)}
-                    className="w-full bg-slate-50 text-sm border border-pink-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-950 text-sm border border-pink-100 dark:border-slate-800 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all text-gray-800 dark:text-slate-100"
                     style={{ minHeight: "48px" }}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-500 tracking-wide block">Suitable Time Slot</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-slate-400 tracking-wide block">Suitable Time Slot</label>
                   <select 
                     value={bookingTime}
                     onChange={(e) => setBookingTime(e.target.value)}
-                    className="w-full bg-slate-50 text-sm border border-pink-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-950 text-sm border border-pink-100 dark:border-slate-800 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all text-gray-800 dark:text-slate-200"
                     style={{ minHeight: "48px" }}
                   >
                     <option value="10:30">10:30 AM - 12:00 PM</option>
@@ -992,11 +1072,11 @@ Could you please confirm the availability of your specialist for this live custo
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-500 tracking-wide block">Core Collection of Interest</label>
+                <label className="text-xs font-semibold text-gray-500 dark:text-slate-400 tracking-wide block">Core Collection of Interest</label>
                 <select 
                   value={bookingCategory}
                   onChange={(e) => setBookingCategory(e.target.value)}
-                  className="w-full bg-slate-50 text-sm border border-pink-100 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-950 text-sm border border-pink-100 dark:border-slate-800 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-pink transition-all text-gray-800 dark:text-slate-200"
                   style={{ minHeight: "48px" }}
                 >
                   <option value="Jewellery">Premium Jewellery & Antiques</option>
@@ -1035,15 +1115,15 @@ Could you please confirm the availability of your specialist for this live custo
       {/* 5. Store Information and Maps Block */}
       <section id="store-info" className="py-20 max-w-7xl mx-auto px-4 sm:px-8 space-y-12">
         <div className="text-center space-y-3">
-          <p className="font-mono text-xs uppercase tracking-widest text-brand-gold-dark font-semibold">
+          <p className="font-mono text-xs uppercase tracking-widest text-brand-gold-dark dark:text-brand-gold font-semibold">
             Visit Our Sanctuary
           </p>
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 leading-tight">
+          <h2 className="font-display font-bold text-3xl sm:text-4xl text-gray-900 dark:text-white leading-tight">
             Flagship Store Hours & Location
           </h2>
           <div className="h-1 w-16 bg-brand-pink mx-auto rounded-full" />
-          <p className="text-gray-500 max-w-md mx-auto text-sm font-light">
-            We are nestled in Vijayawada's vibrant heart. Stop by to inspect fabric textures, custom bridal embellishments, and antique jewelry patterns interactively.
+          <p className="text-gray-500 dark:text-slate-400 max-w-md mx-auto text-sm font-light">
+            We are nestled in Vijayawada's vibrant heart. Stop by to inspect premium designer collections, luxury product finishes, and antique jewelry patterns interactively.
           </p>
         </div>
 
@@ -1051,39 +1131,39 @@ Could you please confirm the availability of your specialist for this live custo
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
           
           {/* Store Hours panel */}
-          <div className="lg:col-span-5 bg-white border border-pink-100 rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-8 shadow-sm">
+          <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-pink-100 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-8 shadow-sm transition-colors duration-300">
             
             <div className="space-y-6">
               
               {/* Store Address Header */}
               <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-pink-50 flex items-center justify-center border border-pink-100 text-brand-pink shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-pink-50 dark:bg-slate-950 flex items-center justify-center border border-pink-100 dark:border-slate-800 text-brand-pink shrink-0">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-800 text-base">Athiva Women's World</p>
-                  <p className="text-sm text-gray-500 font-light mt-1">
+                  <p className="font-bold text-gray-800 dark:text-slate-100 text-base">Athiva Women's World</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400 font-light mt-1">
                     D.No 40-5-5, Sri Swathi Towers, Opposite Kandhari Hotel,<br />Pinnamaneni Polyclinic Road, Sidhartha Nagar,<br />Vijayawada, Andhra Pradesh - 520010, India.
                   </p>
                 </div>
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-pink-50" />
+              <div className="h-px bg-pink-50 dark:bg-slate-800" />
 
               {/* Timings */}
               <div className="space-y-3.5">
-                <p className="font-semibold text-xs font-mono uppercase tracking-wider text-brand-gold-dark">
+                <p className="font-semibold text-xs font-mono uppercase tracking-wider text-brand-gold-dark dark:text-brand-gold">
                   Store Hours
                 </p>
-                <div className="space-y-2 text-sm text-gray-600">
+                <div className="space-y-2 text-sm text-gray-600 dark:text-slate-300">
                   <div className="flex justify-between">
                     <span className="font-medium">Monday - Saturday</span>
                     <span>10:00 AM - 09:00 PM</span>
                   </div>
                   <div className="flex justify-between text-brand-pink font-semibold">
                     <span>Sunday</span>
-                    <span className="bg-pink-100/60 px-2 py-0.5 rounded text-xs">By Appointment Only</span>
+                    <span className="bg-pink-100/60 dark:bg-pink-900/30 px-2 py-0.5 rounded text-xs text-brand-pink">By Appointment Only</span>
                   </div>
                 </div>
               </div>
@@ -1092,11 +1172,11 @@ Could you please confirm the availability of your specialist for this live custo
 
             {/* Helpline quick buttons */}
             <div className="space-y-3">
-              <p className="text-xs text-gray-400 font-light font-sans">Have questions about parking, custom order pickups, or location assistance?</p>
+              <p className="text-xs text-gray-400 dark:text-slate-400 font-light font-sans">Have questions about parking, custom order pickups, or location assistance?</p>
               <div className="flex gap-3">
                 <a 
                   href="tel:+918977600600" 
-                  className="flex-1 bg-slate-50 hover:bg-pink-50 border border-pink-100 text-gray-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-2"
+                  className="flex-1 bg-slate-50 dark:bg-slate-950 hover:bg-pink-50 dark:hover:bg-slate-800 border border-pink-100 dark:border-slate-800 text-gray-700 dark:text-slate-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-2"
                   style={{ minHeight: "48px" }}
                 >
                   <Phone className="w-3.5 h-3.5 text-brand-pink shrink-0" />
@@ -1118,7 +1198,7 @@ Could you please confirm the availability of your specialist for this live custo
           </div>
 
           {/* Map Frame Panel */}
-          <div className="lg:col-span-7 bg-white border border-pink-100 rounded-3xl p-3 shadow-sm h-[380px] lg:h-auto overflow-hidden min-h-[300px] relative">
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-pink-100 dark:border-slate-800 rounded-3xl p-3 shadow-sm h-[380px] lg:h-auto overflow-hidden min-h-[300px] relative transition-colors duration-300">
             <iframe 
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.2917332514104!2d80.64582617604313!3d16.501533227494553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a35fbcbe5147be1%3A0x67fa230e9d6d7e00!2sSri+Swathi+Towers!5e0!3m2!1sen!2sin!4v1718160000000!5m2!1sen!2sin" 
               className="w-full h-full rounded-2xl border-0"
@@ -1136,15 +1216,15 @@ Could you please confirm the availability of your specialist for this live custo
       </section>
 
       {/* 6. Traditional FAQ Box - Strict 48px target constraint complied */}
-      <section id="faq" className="py-20 bg-pink-100/35 border-t border-pink-50">
+      <section id="faq" className="py-20 bg-pink-100/35 dark:bg-slate-950/40 border-t border-pink-50 dark:border-slate-900 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 sm:px-8 space-y-10">
           
           <div className="text-center space-y-3">
-            <h2 className="font-display font-bold text-3xl text-gray-900">
+            <h2 className="font-display font-bold text-3xl text-gray-900 dark:text-white">
               Boutique FAQ & Policies
             </h2>
             <div className="h-1 w-12 bg-brand-gold mx-auto rounded-full" />
-            <p className="text-gray-500 text-sm font-light">
+            <p className="text-gray-500 dark:text-slate-400 text-sm font-light">
               Find instant answers to inquiries regarding product authenticities, gift hampers, delivery timeframes, and video walkthrough bookings.
             </p>
           </div>
@@ -1155,13 +1235,13 @@ Could you please confirm the availability of your specialist for this live custo
               return (
                 <div 
                   key={index} 
-                  className="bg-white border border-pink-100 rounded-2xl transition-all overflow-hidden shadow-xs hover:border-pink-200"
+                  className="bg-white dark:bg-slate-900 border border-pink-100 dark:border-slate-800 rounded-2xl transition-all overflow-hidden shadow-xs hover:border-pink-200 dark:hover:border-slate-750"
                 >
                   {/* FAQ Header Accordion Toggle Button - Strict 48px touch target aligned */}
                   <button
                     type="button"
                     onClick={() => setActiveFaq(isSelected ? null : index)}
-                    className="w-full flex items-center justify-between text-left px-5 py-4 focus:outline-none focus:bg-pink-50/50 hover:bg-pink-50/30 transition-colors select-none text-gray-800 font-semibold group cursor-pointer"
+                    className="w-full flex items-center justify-between text-left px-5 py-4 focus:outline-none focus:bg-pink-50/50 dark:focus:bg-slate-800/40 hover:bg-pink-50/30 dark:hover:bg-slate-800/30 transition-colors select-none text-gray-800 dark:text-slate-200 font-semibold group cursor-pointer"
                     style={{ minHeight: "56px" }} // Explicit height over 48px limit
                   >
                     <span className="text-sm md:text-base group-hover:text-brand-pink transition-colors">
@@ -1179,7 +1259,7 @@ Could you please confirm the availability of your specialist for this live custo
                         transition={{ duration: 0.25 }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-5 pt-1 text-sm text-gray-500 leading-relaxed font-light border-t border-pink-50">
+                        <div className="px-5 pb-5 pt-1 text-sm text-gray-500 dark:text-slate-300 leading-relaxed font-light border-t border-pink-50 dark:border-slate-800">
                           {faq.answer}
                         </div>
                       </motion.div>
@@ -1267,36 +1347,36 @@ Could you please confirm the availability of your specialist for this live custo
               initial={{ opacity: 0, y: 15, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 15, scale: 0.95 }}
-              className="bg-white border border-pink-100 rounded-2xl p-4 shadow-xl flex flex-col gap-3 relative pb-3 w-[280px] sm:w-[320px]"
+              className="bg-white dark:bg-slate-900 border border-pink-100 dark:border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col gap-3 relative pb-3 w-[280px] sm:w-[320px] transition-colors duration-200"
             >
               <button 
                 onClick={() => setChatOpened(false)}
-                className="absolute top-2.5 right-2.5 text-gray-400 hover:text-brand-pink p-1 rounded-full hover:bg-slate-50 transition-colors"
+                className="absolute top-2.5 right-2.5 text-gray-400 hover:text-brand-pink p-1 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 style={{ width: "24px", height: "24px" }}
               >
                 <X className="w-3.5 h-3.5" />
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="relative w-9 h-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+                <div className="relative w-9 h-9 rounded-full bg-green-55 dark:bg-green-950/20 flex items-center justify-center shrink-0">
                   <img 
                     src="/images/logo.png" 
                     alt="Athiva Boutique Assistant" 
-                    className="w-full h-full object-cover rounded-full"
+                    className="w-full h-full object-cover rounded-full animate-none"
                     loading="lazy"
                   />
                   {/* Glowing online status led dot */}
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white animate-pulse" />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white dark:border-slate-800 animate-pulse" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-800">Athiva Boutique Helpdesk</p>
+                  <p className="text-xs font-bold text-gray-800 dark:text-slate-100">Athiva Boutique Helpdesk</p>
                   <p className="text-[10px] text-green-600 font-semibold flex items-center gap-1">
                     <span>●</span> Online (Ready to Help)
                   </p>
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500 font-light pt-1 leading-relaxed">
+              <p className="text-xs text-gray-500 dark:text-slate-300 font-light pt-1 leading-relaxed">
                 "Hello beautiful visitor! 🌸 Let me know what exquisite jewellery, premium cosmetics, designer handbags, or festive gifts you are looking for today."
               </p>
 
@@ -1308,7 +1388,7 @@ Could you please confirm the availability of your specialist for this live custo
                   value={chatMsg}
                   onChange={(e) => setChatMsg(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') triggerFloatingChat(); }}
-                  className="w-full bg-slate-50 text-[11px] px-3 py-2 rounded-lg border border-pink-100 focus:outline-none focus:ring-1 focus:ring-brand-pink focus:border-brand-pink text-gray-700"
+                  className="w-full bg-slate-50 dark:bg-slate-950 text-[11px] px-3 py-2 rounded-lg border border-pink-100 dark:border-slate-800 focus:outline-none focus:ring-1 focus:ring-brand-pink focus:border-brand-pink text-gray-700 dark:text-slate-200"
                 />
                 <button
                   type="button"
@@ -1367,12 +1447,12 @@ Could you please confirm the availability of your specialist for this live custo
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 180 }}
-                className="bg-white rounded-3xl border border-pink-100 shadow-2xl w-full max-w-5xl overflow-hidden relative z-10 grid grid-cols-1 md:grid-cols-12 md:max-h-[85vh] h-auto"
+                className="bg-white dark:bg-slate-900 rounded-3xl border border-pink-100 dark:border-slate-800 shadow-2xl w-full max-w-5xl overflow-hidden relative z-10 grid grid-cols-1 md:grid-cols-12 md:max-h-[85vh] h-auto transition-colors duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
                 
                 {/* Visual Image Preview Column */}
-                <div className="relative md:col-span-7 bg-slate-50 min-h-[300px] md:h-full overflow-hidden flex items-center justify-center border-b md:border-b-0 md:border-r border-pink-50">
+                <div className="relative md:col-span-7 bg-slate-50 dark:bg-slate-950 min-h-[300px] md:h-full overflow-hidden flex items-center justify-center border-b md:border-b-0 md:border-r border-pink-50 dark:border-slate-800 transition-colors duration-200">
                   
                   {/* Absolute subtle ambient background layer of the image */}
                   <img
@@ -1432,7 +1512,7 @@ Could you please confirm the availability of your specialist for this live custo
                           setLightboxProductIndex((prev) => (prev === null ? 0 : (prev - 1 + sortedProducts.length) % sortedProducts.length));
                           setIsLightboxZoomed(false);
                         }}
-                        className="w-12 h-12 bg-white/90 hover:bg-white text-slate-800 hover:text-brand-pink border border-pink-50 rounded-full flex items-center justify-center transition-all cursor-pointer pointer-events-auto active:scale-90 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-pink"
+                        className="w-12 h-12 bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-scale-95 text-slate-800 dark:text-slate-100 hover:text-brand-pink dark:hover:text-brand-pink border border-pink-50 dark:border-slate-800 rounded-full flex items-center justify-center transition-all cursor-pointer pointer-events-auto active:scale-90 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-pink"
                         style={{ minWidth: "48px", minHeight: "48px" }}
                         title="View previous active display item"
                         aria-label="Previous exhibit"
@@ -1446,7 +1526,7 @@ Could you please confirm the availability of your specialist for this live custo
                           setLightboxProductIndex((prev) => (prev === null ? 0 : (prev + 1) % sortedProducts.length));
                           setIsLightboxZoomed(false);
                         }}
-                        className="w-12 h-12 bg-white/90 hover:bg-white text-slate-800 hover:text-brand-pink border border-pink-50 rounded-full flex items-center justify-center transition-all cursor-pointer pointer-events-auto active:scale-90 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-pink"
+                        className="w-12 h-12 bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-scale-95 text-slate-800 dark:text-slate-100 hover:text-brand-pink dark:hover:text-brand-pink border border-pink-50 dark:border-slate-800 rounded-full flex items-center justify-center transition-all cursor-pointer pointer-events-auto active:scale-90 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-pink"
                         style={{ minWidth: "48px", minHeight: "48px" }}
                         title="View next active display item"
                         aria-label="Next exhibit"
@@ -1459,7 +1539,7 @@ Could you please confirm the availability of your specialist for this live custo
                 </div>
 
                 {/* Right Metadata Details & Action Panel */}
-                <div className="md:col-span-5 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto md:max-h-[85vh] gap-6">
+                <div className="md:col-span-5 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto md:max-h-[85vh] gap-6 bg-white dark:bg-slate-900 transition-colors duration-200">
                   
                   {/* Header Title Block */}
                   <div className="space-y-4">
@@ -1472,7 +1552,7 @@ Could you please confirm the availability of your specialist for this live custo
                             Premium choice
                           </span>
                         )}
-                        <span className="bg-pink-50 text-brand-pink border border-pink-100 text-[10px] font-semibold py-0.5 px-2 rounded-md font-mono uppercase tracking-wider">
+                        <span className="bg-pink-50 dark:bg-slate-950 text-brand-pink border border-pink-100 dark:border-slate-800 text-[10px] font-semibold py-0.5 px-2 rounded-md font-mono uppercase tracking-wider">
                           {prod.category}
                         </span>
                       </div>
@@ -1481,7 +1561,7 @@ Could you please confirm the availability of your specialist for this live custo
                       <button
                         type="button"
                         onClick={() => setLightboxProductIndex(null)}
-                        className="w-10 h-10 rounded-full bg-slate-50 hover:bg-pink-50 text-slate-500 hover:text-brand-pink border border-pink-100/60 flex items-center justify-center cursor-pointer active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-brand-pink"
+                        className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-950 hover:bg-pink-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-brand-pink border border-pink-100/60 dark:border-slate-800 flex items-center justify-center cursor-pointer active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-brand-pink"
                         style={{ minWidth: "40px", minHeight: "40px" }}
                         title="Dismiss gallery display overlay"
                         aria-label="Close detail modal"
@@ -1492,26 +1572,26 @@ Could you please confirm the availability of your specialist for this live custo
 
                     {/* Product Name Title */}
                     <div className="space-y-1">
-                      <h3 className="font-display font-bold text-xl sm:text-2xl text-gray-900 leading-tight">
+                      <h3 className="font-display font-bold text-xl sm:text-2xl text-gray-900 dark:text-white leading-tight animate-none">
                         {prod.name}
                       </h3>
-                      <p className="text-[10px] font-mono text-gray-400">
-                        Item Reference Code: <span className="font-semibold text-slate-800">{prod.id}</span>
+                      <p className="text-[10px] font-mono text-gray-400 dark:text-slate-400">
+                        Item Reference Code: <span className="font-semibold text-slate-800 dark:text-slate-300">{prod.id}</span>
                       </p>
                     </div>
 
                     {/* Horizontal separator */}
-                    <div className="h-px bg-pink-100/50 w-full" />
+                    <div className="h-px bg-pink-100/50 dark:bg-slate-800 w-full" />
 
                     {/* Core Price Tags Block */}
                     <div className="space-y-1">
-                      <p className="text-xs text-gray-400 font-mono font-medium uppercase tracking-wider">Current Market Price</p>
+                      <p className="text-xs text-gray-400 dark:text-slate-400 font-mono font-medium uppercase tracking-wider">Current Market Price</p>
                       <div className="flex items-baseline gap-2.5">
                         <span className="text-2xl sm:text-3xl font-display font-black text-brand-pink tracking-tight">
                           {prod.price}
                         </span>
                         {prod.originalPrice && (
-                          <span className="text-sm text-gray-400 line-through">
+                          <span className="text-sm text-gray-400 dark:text-slate-400 line-through">
                             {prod.originalPrice}
                           </span>
                         )}
@@ -1520,23 +1600,23 @@ Could you please confirm the availability of your specialist for this live custo
 
                     {/* Description Text block */}
                     <div className="space-y-1.5">
-                      <p className="text-xs text-gray-400 font-mono font-medium uppercase tracking-wider">Product Description</p>
-                      <p className="text-sm text-gray-600 leading-relaxed font-light font-sans">
+                      <p className="text-xs text-gray-400 dark:text-slate-400 font-mono font-medium uppercase tracking-wider">Product Description</p>
+                      <p className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed font-light font-sans">
                         {prod.description}
                       </p>
                     </div>
 
                     {/* Special features checklist */}
                     <div className="pt-3 space-y-2">
-                      <div className="flex items-start gap-2 text-xs text-slate-600">
+                      <div className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
                         <CheckCircle className="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0" />
                         <span>100% Authentic Quality Guaranteed</span>
                       </div>
-                      <div className="flex items-start gap-2 text-xs text-slate-600">
+                      <div className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
                         <CheckCircle className="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0" />
                         <span>Video Consultation & live shade review available</span>
                       </div>
-                      <div className="flex items-start gap-2 text-xs text-slate-600">
+                      <div className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
                         <CheckCircle className="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0" />
                         <span>Safe Premium Courier Shipping all over India</span>
                       </div>
@@ -1545,7 +1625,7 @@ Could you please confirm the availability of your specialist for this live custo
                   </div>
 
                   {/* Bottom Checkout & Back CTA area */}
-                  <div className="space-y-3 pt-6 border-t border-pink-100/50">
+                  <div className="space-y-3 pt-6 border-t border-pink-100/50 dark:border-slate-800">
                     
                     {/* Main direct order trigger button with strict compliance sizes */}
                     <button
@@ -1557,8 +1637,8 @@ Could you please confirm the availability of your specialist for this live custo
                       disabled={!prod.inStock}
                       className={`w-full font-bold rounded-xl text-xs sm:text-sm py-4 flex items-center justify-center gap-2 border shadow-sm transition-all duration-300 select-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink active:scale-95 ${
                         prod.inStock
-                          ? "bg-brand-pink text-white border-brand-pink hover:bg-white hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/10"
-                          : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                          ? "bg-brand-pink text-white border-brand-pink hover:bg-white dark:hover:bg-slate-800 hover:text-brand-pink hover:shadow-lg hover:shadow-brand-pink/10"
+                          : "bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed"
                       }`}
                       style={{ minHeight: "52px" }}
                     >
@@ -1570,7 +1650,7 @@ Could you please confirm the availability of your specialist for this live custo
                     <button
                       type="button"
                       onClick={() => setLightboxProductIndex(null)}
-                      className="w-full text-center py-2.5 text-xs text-slate-400 hover:text-brand-pink font-semibold focus:outline-none hover:underline cursor-pointer"
+                      className="w-full text-center py-2.5 text-xs text-slate-400 dark:text-slate-400 hover:text-brand-pink font-semibold focus:outline-none hover:underline cursor-pointer"
                       style={{ minHeight: "44px" }}
                     >
                       Back to browse collections
@@ -1584,6 +1664,25 @@ Could you please confirm the availability of your specialist for this live custo
             </motion.div>
           );
         })()}
+      </AnimatePresence>
+
+      {/* Decorative Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            key="back-to-top"
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 left-6 z-45 w-12 h-12 rounded-full bg-brand-pink dark:bg-brand-pink-deep text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-pink hover:scale-110 active:scale-95 border border-pink-400/20"
+            title="Scroll back to top"
+            aria-label="Scroll back to top"
+            style={{ minHeight: "48px", minWidth: "48px" }}
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
       </AnimatePresence>
 
     </div>

@@ -1,0 +1,6 @@
+{
+  "name": "Athiva Womens World",
+  "description": "An elegant, mobile-first, SEO-optimized showcase website for Athiva Women's World retail shop in Vijayawada.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
